@@ -455,6 +455,239 @@
           }
         }
       ]
+    },
+    {
+      "name": "10. GoF & SOLID - Tarification & Validation",
+      "description": "Tests dédiés à l'Atelier GoF & SOLID (Patron Strategy pour le calcul des tarifs, SRP pour la validation des véhicules, et DIP pour la journalisation).",
+      "item": [
+        {
+          "name": "1. Lister les Politiques Tarifaires (Strategy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarification/politiques",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarification",
+                "politiques"
+              ]
+            },
+            "description": "Retourne la liste des stratégies tarifaires injectées dynamiquement par Spring (STANDARD, WEEKEND, LONGUE_DUREE, ENTREPRISE)."
+          }
+        },
+        {
+          "name": "2. Calculer Tarif - Standard (GoF Strategy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarification/calculer?politique=STANDARD&tarifJournalier=120.0&jours=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarification",
+                "calculer"
+              ],
+              "query": [
+                {
+                  "key": "politique",
+                  "value": "STANDARD"
+                },
+                {
+                  "key": "tarifJournalier",
+                  "value": "120.0"
+                },
+                {
+                  "key": "jours",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Calcul standard : tarifJournalier * jours (120 * 5 = 600.0 DT)."
+          }
+        },
+        {
+          "name": "3. Calculer Tarif - Weekend (+15% majoration)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarification/calculer?politique=WEEKEND&tarifJournalier=120.0&jours=2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarification",
+                "calculer"
+              ],
+              "query": [
+                {
+                  "key": "politique",
+                  "value": "WEEKEND"
+                },
+                {
+                  "key": "tarifJournalier",
+                  "value": "120.0"
+                },
+                {
+                  "key": "jours",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Calcul weekend : majoration de 15% appliquée sur le tarif journalier (120 * 1.15 * 2 = 276.0 DT)."
+          }
+        },
+        {
+          "name": "4. Calculer Tarif - Longue Durée (15% remise > 7 jours)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarification/calculer?politique=LONGUE_DUREE&tarifJournalier=100.0&jours=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarification",
+                "calculer"
+              ],
+              "query": [
+                {
+                  "key": "politique",
+                  "value": "LONGUE_DUREE"
+                },
+                {
+                  "key": "tarifJournalier",
+                  "value": "100.0"
+                },
+                {
+                  "key": "jours",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Calcul longue durée : réduction de 15% pour toute location > 7 jours (100 * 10 * 0.85 = 850.0 DT)."
+          }
+        },
+        {
+          "name": "5. Calculer Tarif - Entreprise (20% remise B2B - OCP)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarification/calculer?politique=ENTREPRISE&tarifJournalier=150.0&jours=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarification",
+                "calculer"
+              ],
+              "query": [
+                {
+                  "key": "politique",
+                  "value": "ENTREPRISE"
+                },
+                {
+                  "key": "tarifJournalier",
+                  "value": "150.0"
+                },
+                {
+                  "key": "jours",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Calcul B2B : 4ème stratégie implémentée sans toucher au code existant (OCP) -> 20% de remise (150 * 10 * 0.80 = 1200.0 DT)."
+          }
+        },
+        {
+          "name": "6. Calculer Tarif Véhicule Existant #1 (Strategy + Service)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarification/vehicule/1?politique=WEEKEND&jours=3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarification",
+                "vehicule",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "politique",
+                  "value": "WEEKEND"
+                },
+                {
+                  "key": "jours",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Applique dynamiquement la stratégie choisie en extrayant le tarif journalier réel du véhicule #1 en base."
+          }
+        },
+        {
+          "name": "7. Test SRP Validation (Véhicule Invalide - Rejet par VehiculeValidator)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"\",\n  \"marque\": \"Renault\",\n  \"modele\": \"Clio\",\n  \"tarifJournalier\": -20.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehicules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehicules"
+              ]
+            },
+            "description": "Test du Single Responsibility Principle : VehiculeValidator rejette les données incomplètes/négatives avant toute sauvegarde."
+          }
+        },
+        {
+          "name": "8. Test SRP & DIP (Ajout Véhicule Valide avec Journalisation)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"228-TN-1234\",\n  \"marque\": \"Peugeot\",\n  \"modele\": \"208 GT\",\n  \"categorie\": \"CITADINE\",\n  \"tarifJournalier\": 110.0,\n  \"statut\": \"DISPONIBLE\",\n  \"kilometrage\": 15000,\n  \"anneeFabrication\": 2023\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehicules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vehicules"
+              ]
+            },
+            "description": "Test complet SRP + DIP : validation par VehiculeValidator, persistance par VehiculeRepository, et audit par JournalisationService (IoC/DIP)."
+          }
+        }
+      ]
     }
   ]
 }
