@@ -14,4 +14,5 @@ public interface IVehiculeService {
     List<Vehicule> getVehiculesDisponibles();
     List<Vehicule> getVehiculesParCategorie(CategorieVehicule categorie);
     List<Vehicule> getVehiculesParAgence(Long idAgence);
+    double calculerTarif(Long idVehicule, int jours, String typePolitique);
 }

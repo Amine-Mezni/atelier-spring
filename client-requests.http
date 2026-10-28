@@ -131,3 +131,32 @@ Accept: application/json
 ### 9.1 Lister les opérations de maintenance
 GET {{baseUrl}}/maintenances
 Accept: application/json
+
+
+### -------------------------------------------------------------------------
+### 10. TARIFICATION (GoF Strategy & OCP)
+### -------------------------------------------------------------------------
+
+### 10.1 Obtenir les politiques tarifaires disponibles (STANDARD, WEEKEND, LONGUE_DUREE, ENTREPRISE)
+GET {{baseUrl}}/tarification/politiques
+Accept: application/json
+
+### 10.2 Calculer tarif STANDARD (120€ x 5 jours = 600€)
+GET {{baseUrl}}/tarification/calculer?politique=STANDARD&tarifJournalier=120&jours=5
+Accept: application/json
+
+### 10.3 Calculer tarif WEEKEND (-10% : 120€ x 5 = 540€)
+GET {{baseUrl}}/tarification/calculer?politique=WEEKEND&tarifJournalier=120&jours=5
+Accept: application/json
+
+### 10.4 Calculer tarif LONGUE_DUREE (-20% : 120€ x 5 = 480€)
+GET {{baseUrl}}/tarification/calculer?politique=LONGUE_DUREE&tarifJournalier=120&jours=5
+Accept: application/json
+
+### 10.5 Calculer tarif ENTREPRISE (-15% : 120€ x 5 = 510€)
+GET {{baseUrl}}/tarification/calculer?politique=ENTREPRISE&tarifJournalier=120&jours=5
+Accept: application/json
+
+### 10.6 Calculer tarif pour le véhicule 1 (Golf 8) sur 7 jours avec remise ENTREPRISE
+GET {{baseUrl}}/tarification/vehicule/1?politique=ENTREPRISE&jours=7
+Accept: application/json
